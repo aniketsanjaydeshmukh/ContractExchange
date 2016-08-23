@@ -164,6 +164,7 @@ public class ContractController {
 	void searchByBuyer(@RequestBody ContractDTO contractDTO,HttpServletRequest request,HttpServletResponse response) throws Exception {
 		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
 		Company company = companyServices.getCompanyByCompany(contractDTO.getCompany());
+		if(company != null){
 		Buyer buyer = buyerServices.getBuyerByCompanyId(company.getId());
 		Set<Contract> contractList = contractServices.getContractByBuyer(buyer.getBuyerID());
 		for (Contract contract : contractList) {
@@ -181,6 +182,25 @@ public class ContractController {
 			obj.put("seller", contract.getSeller().getCompany().getCompany());
 			obj.put("typeOfGood", contract.getTypeOfGood());
 			list.add(obj);
+		}
+		}else{
+			Set<Contract> contractList = contractServices.getContractByTypeOfGood(contractDTO.getCompany());
+			for (Contract contract : contractList) {
+				Map<String,Object> obj = new HashMap<String,Object>();
+				obj.put("id", contract.getId());
+				obj.put("buyer", contract.getBuyer().getCompany().getCompany());
+				obj.put("currency", contract.getCurrency());
+				obj.put("dateOfDelivery", contract.getDateOfDelivery());
+				obj.put("grade", contract.getGrade());
+				obj.put("place", contract.getPlace());
+				obj.put("price", contract.getPrice());
+				obj.put("quality", contract.getQuality());
+				obj.put("quantity", contract.getQuantity());
+				obj.put("quantityUnit", contract.getQuantityUnit());
+				obj.put("seller", contract.getSeller().getCompany().getCompany());
+				obj.put("typeOfGood", contract.getTypeOfGood());
+				list.add(obj);
+			}
 		}
 		response.setContentType("application/json; charset=UTF-8"); 
 		response.getWriter().print(new JSONSerializer().exclude("class","*.class","authorities").deepSerialize(list));
